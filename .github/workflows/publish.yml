@@ -30,8 +30,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: producer/oceanbase-cdc-producer
-          file: producer/oceanbase-cdc-producer/Dockerfile
+          context: .
+          file: Dockerfile
           push: true
           tags: ${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
