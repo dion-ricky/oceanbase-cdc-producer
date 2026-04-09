@@ -9,7 +9,7 @@ use mysql::prelude::Queryable;
 use mysql::{params, OptsBuilder, Pool, PooledConn, Statement};
 use rand::distributions::{Alphanumeric, DistString};
 use rand::seq::SliceRandom;
-use rand::{thread_rng, Rng, RngCore};
+use rand::{thread_rng, Rng};
 use serde_json::json;
 
 const INSERT_RATIO_DEFAULT: u32 = 60;
@@ -253,9 +253,9 @@ fn prepare_statements(conn: &mut PooledConn, config: &Config) -> mysql::Result<S
     let delete_sql = format!("DELETE FROM {} WHERE id = :id", config.table);
 
     Ok(Statements {
-        insert: conn.prepare(insert_sql)?,
-        update: conn.prepare(update_sql)?,
-        delete: conn.prepare(delete_sql)?,
+        insert: conn.prep(insert_sql)?,
+        update: conn.prep(update_sql)?,
+        delete: conn.prep(delete_sql)?,
     })
 }
 
@@ -456,7 +456,7 @@ impl AllTypesRow {
             c_char: format!("{: <16}", char_seed),
             c_varchar: format!("{}-{}", short_words.join("-"), random_ascii(rng, 10)),
             c_binary: random_bytes(rng, 16),
-            c_varbinary: random_bytes(rng, rng.gen_range(12..48)),
+            c_varbinary: { let n = rng.gen_range(12..48); random_bytes(rng, n) },
             c_tinytext: Sentence(3..6).fake(),
             c_text: Sentence(8..14).fake(),
             c_mediumtext: medium_words.join(" "),
